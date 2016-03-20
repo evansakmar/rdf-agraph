@@ -7,21 +7,21 @@ describe RDF::AllegroGraph::Query::FunctorExpression do
   end
 
   it "has a name" do
-    subject.name.should == 'ego-group-member'
+    expect(subject.name).to eq('ego-group-member')
   end
 
   it "has a list of arguments" do
-    subject.should have(4).arguments
-    subject.arguments[0].should == EX.me
-    subject.arguments[1].should be_kind_of(RDF::Literal)
-    subject.arguments[1].should == RDF::Literal.new(2)
-    subject.arguments[2].should == FOAF.knows
-    subject.arguments[3].should be_instance_of(RDF::Query::Variable)
+    expect(subject.size).to eq(4)
+    expect(subject.arguments[0]).to eq(EX.me)
+    expect(subject.arguments[1]).to be_kind_of(RDF::Literal)
+    expect(subject.arguments[1]).to eq(RDF::Literal.new(2))
+    expect(subject.arguments[2]).to eq(FOAF.knows)
+    expect(subject.arguments[3]).to be_instance_of(RDF::Query::Variable)
   end
 
   describe "#variables" do
     it "returns a hash table of all variables in the functor" do
-      subject.variables[:person].should be_instance_of(RDF::Query::Variable)
+      expect(subject.variables[:person]).to be_instance_of(RDF::Query::Variable)
     end
   end
 
@@ -31,7 +31,7 @@ describe RDF::AllegroGraph::Query::FunctorExpression do
     end
 
     it "serializes a functor as a Prolog query term" do
-      subject.to_prolog(@repository).should == <<EOD.chomp
+      expect(subject.to_prolog(@repository)).to eq <<EOD.chomp
 (ego-group-member !<http://example.com/me> !"2"^^<http://www.w3.org/2001/XMLSchema#integer> !<http://xmlns.com/foaf/0.1/knows> ?person)
 EOD
     end

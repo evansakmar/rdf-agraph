@@ -17,7 +17,7 @@ describe RDF::AllegroGraph::Session do
   describe "#close" do
     it "destroys the underlying session" do
       @repository.close
-      lambda { @repository.close }.should raise_error
+      expect { @repository.close }.to raise_error
       @repository = nil
     end
 
@@ -25,21 +25,21 @@ describe RDF::AllegroGraph::Session do
       @repository.insert(@statement)
       @repository.close
       @repository = nil
-      @real_repository.should_not have_statement(@statement)
+      expect(@real_repository).not_to have_statement(@statement)
     end
   end
 
   describe "#ping" do
     it "pings the session" do
-      @repository.ping.should be_true
+      expect(@repository.ping).to be_truthy
     end
   end
 
   describe "#still_alive?" do
     it "indicates if the session is still alive" do
-      @repository.still_alive?.should be_true
+      expect(@repository.still_alive?).to be_truthy
       @repository.close
-      @repository.still_alive?.should be_false
+      expect(@repository.still_alive?).to be_falsey
       @repository = nil
     end
   end
@@ -50,18 +50,18 @@ describe RDF::AllegroGraph::Session do
     end
 
     it "does not show changes to other sessions before commit is called" do
-      @real_repository.should_not have_statement(@statement)
+      expect(@real_repository).not_to have_statement(@statement)
     end
 
     it "shows changes to other sessions after commit is called" do
       @repository.commit
-      @real_repository.should have_statement(@statement)
+      expect(@real_repository).to have_statement(@statement)
     end
 
     it "discards changes when rollback is called" do
       @repository.rollback
-      @real_repository.should_not have_statement(@statement)
-      @repository.should_not have_statement(@statement)
+      expect(@real_repository).not_to have_statement(@statement)
+      expect(@repository).not_to have_statement(@statement)
     end
   end
 
@@ -73,7 +73,7 @@ describe RDF::AllegroGraph::Session do
     end
 
     it "show changes to other sessions before commit is called" do
-      @real_repository.should have_statement(@statement)
+      expect(@real_repository).to have_statement(@statement)
     end
   end
 
@@ -93,7 +93,7 @@ describe RDF::AllegroGraph::Session do
     end
 
     it "writes the new statements in the writable mirror" do
-      @real_repository.should have_statement(@statement)
+      expect(@real_repository).to have_statement(@statement)
     end
   end
 

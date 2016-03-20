@@ -6,8 +6,8 @@ module RDF::AllegroGraph
 
     describe ".parse_uri" do
       before do
-        Catalog.stub(:new)
-        Server.stub(:new)
+        allow(Catalog).to receive(:new)
+        allow(Server).to receive(:new)
       end
 
       it 'should parse a root-catalog repository' do

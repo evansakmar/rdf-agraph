@@ -5,10 +5,10 @@ shared_examples_for "a path functor" do
     slns = @repository.build_query do |q|
       q.send(@functor, EX.me, EX.rachel, @knows, :path)
     end.run.to_a
-    slns.length.should >= 1
+    expect(slns.length).to be >= 1
     slns.each do |s|
-      s.path.first.should == EX.me
-      s.path.last.should == EX.rachel
+      expect(s.path.first).to eq(EX.me)
+      expect(s.path.last).to eq(EX.rachel)
     end
   end
 
@@ -16,7 +16,7 @@ shared_examples_for "a path functor" do
     slns = @repository.build_query do |q|
       q.send(@functor, EX.me, EX.rachel, @knows, :path, :max_depth => 1)
     end.run.to_a
-    slns.should be_empty
+    expect(slns).to be_empty
   end
 end
 
@@ -56,9 +56,9 @@ describe RDF::AllegroGraph::Functors::SnaFunctors do
         slns = @repository.build_query do |q|
           q.breadth_first_search_paths(EX.me, EX.rachel, @knows, :path)
         end.run.to_a
-        slns.should include_solution(:path => [EX.me, EX.bill, EX.rachel])
-        slns.should include_solution(:path => [EX.me, EX.sally, EX.rachel])
-        slns.should_not include_solution(:path => [EX.me, EX.sam, EX.ben,
+        expect(slns).to include_solution(:path => [EX.me, EX.bill, EX.rachel])
+        expect(slns).to include_solution(:path => [EX.me, EX.sally, EX.rachel])
+        expect(slns).not_to include_solution(:path => [EX.me, EX.sam, EX.ben,
                                                    EX.rachel])
       end
     end
@@ -78,8 +78,8 @@ describe RDF::AllegroGraph::Functors::SnaFunctors do
         solutions = @repository.build_query do |q|
           q.neighbor_count(EX.me, @knows, :n)
         end.run.to_a
-        solutions.length.should == 1
-        solutions.first.n.object.should == 3
+        expect(solutions.length).to eq(1)
+        expect(solutions.first.n.object).to eq(3)
       end
     end
 
@@ -88,9 +88,9 @@ describe RDF::AllegroGraph::Functors::SnaFunctors do
         solutions = @repository.build_query do |q|
           q.neighbors(EX.me, @knows, :neighbor)
         end.run.to_a
-        solutions.should include_solution(:neighbor =>  EX.bill)
-        solutions.should include_solution(:neighbor =>  EX.sally)
-        solutions.should include_solution(:neighbor =>  EX.sam)
+        expect(solutions).to include_solution(:neighbor =>  EX.bill)
+        expect(solutions).to include_solution(:neighbor =>  EX.sally)
+        expect(solutions).to include_solution(:neighbor =>  EX.sam)
       end
     end
   end
@@ -111,10 +111,10 @@ describe RDF::AllegroGraph::Functors::SnaFunctors do
           q.ego_group EX.me, 2, @knows, :group
         end.run.to_a
 
-        solutions.length.should == 1
+        expect(solutions.length).to eq(1)
         group = solutions[0].group        
-        group.should include(EX.me, EX.bill, EX.rachel)
-        group.should_not include(EX.gary)
+        expect(group).to include(EX.me, EX.bill, EX.rachel)
+        expect(group).not_to include(EX.gary)
       end
     end
 
@@ -124,10 +124,10 @@ describe RDF::AllegroGraph::Functors::SnaFunctors do
           q.ego_group_member EX.me, 2, @knows, :person
         end.run.to_a
 
-        solutions.should include_solution(:person => EX.me)
-        solutions.should include_solution(:person => EX.bill)
-        solutions.should include_solution(:person => EX.rachel)
-        solutions.should_not include_solution(:person => EX.gary)
+        expect(solutions).to include_solution(:person => EX.me)
+        expect(solutions).to include_solution(:person => EX.bill)
+        expect(solutions).to include_solution(:person => EX.rachel)
+        expect(solutions).not_to include_solution(:person => EX.gary)
       end
     end
   end

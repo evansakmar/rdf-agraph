@@ -13,11 +13,11 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
 
   describe "#supports?" do
     it "returns true if passed :context" do
-      @repository.supports?(:context).should == true
+      expect(@repository.supports?(:context)).to eq(true)
     end
 
     it "returns false if passed an unsupported feature" do
-      @repository.supports?(:no_such_feature).should == false
+      expect(@repository.supports?(:no_such_feature)).to eq(false)
     end
   end
 
@@ -29,7 +29,7 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
 
     describe "#size" do
       it "returns the amount of statements in the repository" do
-        @repository.size.should eql(73)
+        expect(@repository.size).to eql(73)
       end
     end
 
@@ -39,7 +39,7 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
       context "with :json format" do
         before { @repository.insert_options = { :format => :json } }
         it "should use a JSON request to send the statements" do
-          @repository.resource_writable.should_receive(:request_json).at_least(:once).and_call_original
+          expect(@repository.resource_writable).to receive(:request_json).at_least(:once).and_call_original
           @repository.send(:insert_statements, statement)
         end
       end
@@ -47,7 +47,7 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
       context "with :ntriples format" do
         before { @repository.insert_options = { :format => :ntriples } }
         it "should use a HTTP request to send the statements" do
-          @repository.resource_writable.should_receive(:request_http).at_least(:once).and_call_original
+          expect(@repository.resource_writable).to receive(:request_http).at_least(:once).and_call_original
           @repository.send(:insert_statements, statement)
         end
       end
@@ -58,13 +58,13 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
         stmt = RDF::Statement.new(RDF::URI("http://ar.to/#self"),
                                   FOAF.mbox,
                                   RDF::URI("mailto:arto.bendiken@gmail.com"))
-        @repository.should have_statement(stmt)
+        expect(@repository).to have_statement(stmt)
         # This method is protected, but we're required to override it.
         # Unfortuantely, because we also override delete_statements,
         # there's no way for it to get called using public APIs.  So we
         # bypass the 'protected' restriction using 'send'.
         @repository.send(:delete_statement, stmt)
-        @repository.should_not have_statement(stmt)
+        expect(@repository).not_to have_statement(stmt)
       end
     end
 
@@ -73,16 +73,16 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
       context "when SELECT query" do
         it "matches a SPARQL query" do
           s = @repository.sparql_query("SELECT ?name WHERE { <http://ar.to/#self> <http://xmlns.com/foaf/0.1/name> ?name }")
-          s.should be_kind_of(enumerator_class)
-          s.should include_solution(:name => "Arto Bendiken")
+          expect(s).to be_kind_of(enumerator_class)
+          expect(s).to include_solution(:name => "Arto Bendiken")
         end
       end
 
       context "when CONSTRUCT query" do
         it "matches a SPARQL query" do
           s = @repository.sparql_query("CONSTRUCT { <http://ar.to/#self> <http://xmlns.com/foaf/0.1/name> ?name } WHERE { <http://ar.to/#self> <http://xmlns.com/foaf/0.1/name> ?name }")
-          s.should be_kind_of(RDF::Graph)
-          s.should have_statement(RDF::Statement.new(RDF::URI('http://ar.to/#self'), RDF::URI('http://xmlns.com/foaf/0.1/name'), RDF::Literal('Arto Bendiken')))
+          expect(s).to be_kind_of(RDF::Graph)
+          expect(s).to have_statement(RDF::Statement.new(RDF::URI('http://ar.to/#self'), RDF::URI('http://xmlns.com/foaf/0.1/name'), RDF::Literal('Arto Bendiken')))
         end
       end
 
@@ -94,8 +94,8 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
 (select (?name)
   (q- !<http://ar.to/#self> !<http://xmlns.com/foaf/0.1/name> ?name))
 EOD
-        s.should be_kind_of(enumerator_class)
-        s.should include_solution(:name => "Arto Bendiken")
+        expect(s).to be_kind_of(enumerator_class)
+        expect(s).to include_solution(:name => "Arto Bendiken")
       end
     end
 
@@ -103,8 +103,8 @@ EOD
       it "add parameters to each query" do
         @repository.query_options = { :limit => 1, :offset => 1 }
         s = @repository.sparql_query("SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }")
-        s.should_not include_solution(:person => "http://ar.to/#self")
-        s.should include_solution(:person => "http://bhuga.net/#ben")
+        expect(s).not_to include_solution(:person => "http://ar.to/#self")
+        expect(s).to include_solution(:person => "http://bhuga.net/#ben")
       end
     end
 
@@ -113,8 +113,8 @@ EOD
         query = @repository.build_query do |q|
           q.pattern [:person, RDF.type, FOAF.Person]
         end
-        query.should be_kind_of(RDF::AllegroGraph::Query)
-        query.patterns.length.should == 1
+        expect(query).to be_kind_of(RDF::AllegroGraph::Query)
+        expect(query.patterns.length).to eq(1)
       end
     end
 
@@ -126,13 +126,13 @@ EOD
           q.pattern [:person, FOAF.mbox, :email]
         end
         s = @repository.query(query).to_a
-        s.should include_solution(:person => "http://ar.to/#self",
+        expect(s).to include_solution(:person => "http://ar.to/#self",
                                   :name => "Arto Bendiken",
                                   :email => "mailto:arto.bendiken@gmail.com")
-        s.should include_solution(:person => "http://bhuga.net/#ben",
+        expect(s).to include_solution(:person => "http://bhuga.net/#ben",
                                   :name => "Ben Lavender",
                                   :email => "mailto:blavender@gmail.com")
-        s.should include_solution(:person => "http://kellogg-assoc.com/#me",
+        expect(s).to include_solution(:person => "http://kellogg-assoc.com/#me",
                                   :name => "Gregg Kellogg",
                                   :email => "mailto:gregg@kellogg-assoc.com")
       end
@@ -143,10 +143,10 @@ EOD
           q.pattern [:person, FOAF.made, :made], :optional => true
         end
         s = @repository.query(query).to_a
-        s.should include_solution(:person => "http://ar.to/#self",
+        expect(s).to include_solution(:person => "http://ar.to/#self",
                                   :made => "http://rubygems.org/gems/rdf")
-        s.should include_solution(:person => "http://bhuga.net/#ben")
-        s.should include_solution(:person => "http://kellogg-assoc.com/#me")
+        expect(s).to include_solution(:person => "http://bhuga.net/#ben")
+        expect(s).to include_solution(:person => "http://kellogg-assoc.com/#me")
       end
 
       it "runs AllegroGraph-specific queries" do
@@ -155,7 +155,7 @@ EOD
           q.pattern [:person, FOAF.name, "Arto Bendiken"]
         end
         s = @repository.query(query).to_a
-        s.should include_solution(:person => "http://ar.to/#self")
+        expect(s).to include_solution(:person => "http://ar.to/#self")
       end
 
       # TODO: RDF::Query::Pattern doesn't really support contexts yet,
@@ -178,41 +178,43 @@ EOD
     describe "blank node mapping" do
       it "correctly handle blank nodes that originate in the repository" do
         @repository2 = RDF::AllegroGraph::Repository.new(REPOSITORY_OPTIONS)
-        @repository2.each {|stmt| @repository2.should have_statement(stmt) }
+        @repository2.each {|stmt| expect(@repository2).to have_statement(stmt) }
       end
     end
   end
 
   describe "#serialize" do
     it "transforms RDF::Value objects into strings" do
-      @repository.serialize(RDF::URI("http://example.com/")).should ==
+      expect(@repository.serialize(RDF::URI("http://example.com/"))).to eq(
         "<http://example.com/>"
-      @repository.serialize(RDF::Literal.new("string")).should == "\"string\""
+      )
+      expect(@repository.serialize(RDF::Literal.new("string"))).to eq("\"string\"")
     end
 
     it "maps blank nodes to a server-specific representation" do
-      @repository.serialize(RDF::Node.intern('x')).should_not == "_:x"
+      expect(@repository.serialize(RDF::Node.intern('x'))).not_to eq("_:x")
     end
 
     it "serializes variables with a leading '?'" do
-      @repository.serialize(RDF::Query::Variable.new(:x)).should == "?x"
+      expect(@repository.serialize(RDF::Query::Variable.new(:x))).to eq("?x")
     end
   end
 
   describe "#serialize_prolog" do
     it "prefixes RDF values with an !" do
-      @repository.serialize_prolog(RDF::URI("http://example.com/")).should ==
+      expect(@repository.serialize_prolog(RDF::URI("http://example.com/"))).to eq(
         "!<http://example.com/>"
-      @repository.serialize_prolog(RDF::Literal.new("foo")).should == "!\"foo\""
+      )
+      expect(@repository.serialize_prolog(RDF::Literal.new("foo"))).to eq("!\"foo\"")
     end
 
     it "serializes variables without a leading !" do
-      @repository.serialize_prolog(RDF::Query::Variable.new(:x)).should == "?x"
+      expect(@repository.serialize_prolog(RDF::Query::Variable.new(:x))).to eq("?x")
     end
 
     it "serializes Prolog literals" do
       literal = RDF::AllegroGraph::Query::PrologLiteral.new(:foo)
-      @repository.serialize_prolog(literal).should == "foo"
+      expect(@repository.serialize_prolog(literal)).to eq("foo")
     end
   end
 end

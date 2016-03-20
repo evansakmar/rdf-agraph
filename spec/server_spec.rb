@@ -11,110 +11,110 @@ describe RDF::AllegroGraph::Server do
     end
 
     it "returns the protocol version" do
-      @server.should respond_to(:protocol, :protocol_version)
-      @server.protocol.should be_a_kind_of(Numeric)
-      @server.protocol.should >= 4
+      expect(@server).to respond_to(:protocol, :protocol_version)
+      expect(@server.protocol).to be_a_kind_of(Numeric)
+      expect(@server.protocol).to be >= 4
     end
 
     it "returns available repositories" do
-      @server.should respond_to(:repositories)
-      @server.repositories.should be_a_kind_of(Enumerable)
-      @server.repositories.should be_instance_of(Hash)
+      expect(@server).to respond_to(:repositories)
+      expect(@server.repositories).to be_a_kind_of(Enumerable)
+      expect(@server.repositories).to be_instance_of(Hash)
       @server.repositories.each do |identifier, repository|
-        identifier.should be_instance_of(String)
-        repository.should be_instance_of(RDF::AllegroGraph::Repository)
+        expect(identifier).to be_instance_of(String)
+        expect(repository).to be_instance_of(RDF::AllegroGraph::Repository)
       end
     end
 
     it "indicates whether a repository exists" do
-      @server.should respond_to(:has_repository?)
-      @server.has_repository?(REPOSITORY_OPTIONS[:id]).should be_true
-      @server.has_repository?(:foobar).should be_false
+      expect(@server).to respond_to(:has_repository?)
+      expect(@server.has_repository?(REPOSITORY_OPTIONS[:id])).to be_truthy
+      expect(@server.has_repository?(:foobar)).to be_falsey
     end
 
     it "returns existing repositories" do
-      @server.should respond_to(:repository, :[])
+      expect(@server).to respond_to(:repository, :[])
       repository = @server.repository(REPOSITORY_OPTIONS[:id])
-      repository.should_not be_nil
-      repository.should be_instance_of(RDF::AllegroGraph::Repository)
+      expect(repository).not_to be_nil
+      expect(repository).to be_instance_of(RDF::AllegroGraph::Repository)
     end
 
     it "does not return nonexistent repositories" do
-      lambda { @server.repository(:foobar) }.should_not raise_error
+      expect { @server.repository(:foobar) }.not_to raise_error
       repository = @server.repository(:foobar)
-      repository.should be_nil
+      expect(repository).to be_nil
     end
 
     it "supports enumerating repositories" do
-      @server.should respond_to(:each_repository, :each)
+      expect(@server).to respond_to(:each_repository, :each)
       # @server.each_repository.should be_an_enumerator
       @server.each_repository do |repository|
-        repository.should be_instance_of(RDF::AllegroGraph::Repository)
+        expect(repository).to be_instance_of(RDF::AllegroGraph::Repository)
       end
     end
 
     it "returns available catalogs" do
-      @server.should respond_to(:catalogs)
-      @server.catalogs.should be_a_kind_of(Enumerable)
-      @server.catalogs.should be_instance_of(Hash)
+      expect(@server).to respond_to(:catalogs)
+      expect(@server.catalogs).to be_a_kind_of(Enumerable)
+      expect(@server.catalogs).to be_instance_of(Hash)
       @server.catalogs.each do |identifier, catalog|
-        identifier.should be_instance_of(String)
-        catalog.should be_instance_of(RDF::AllegroGraph::Catalog)
+        expect(identifier).to be_instance_of(String)
+        expect(catalog).to be_instance_of(RDF::AllegroGraph::Catalog)
       end
     end
 
     it "indicates whether a catalog exists" do
-      @server.should respond_to(:has_catalog?)
-      @server.has_catalog?(CATALOG_REPOSITORY_OPTIONS[:catalog_id]).should be_true
-      @server.has_catalog?(:foobar).should be_false
+      expect(@server).to respond_to(:has_catalog?)
+      expect(@server.has_catalog?(CATALOG_REPOSITORY_OPTIONS[:catalog_id])).to be_truthy
+      expect(@server.has_catalog?(:foobar)).to be_falsey
     end
 
     it "returns existing catalog" do
-      @server.should respond_to(:catalog)
+      expect(@server).to respond_to(:catalog)
       catalog = @server.catalog(CATALOG_REPOSITORY_OPTIONS[:catalog_id])
-      catalog.should_not be_nil
-      catalog.should be_instance_of(RDF::AllegroGraph::Catalog)
+      expect(catalog).not_to be_nil
+      expect(catalog).to be_instance_of(RDF::AllegroGraph::Catalog)
     end
 
     it "does not return nonexistent catalogs" do
-      lambda { @server.catalog(:foobar) }.should_not raise_error
+      expect { @server.catalog(:foobar) }.not_to raise_error
       catalog = @server.catalog(:foobar)
-      catalog.should be_nil
+      expect(catalog).to be_nil
     end
 
     it "supports enumerating catalogs" do
-      @server.should respond_to(:each_catalog, :each)
+      expect(@server).to respond_to(:each_catalog, :each)
       # @server.each_repository.should be_an_enumerator
       @server.each_catalog do |catalog|
-        catalog.should be_instance_of(RDF::AllegroGraph::Catalog)
+        expect(catalog).to be_instance_of(RDF::AllegroGraph::Catalog)
       end
     end
 
     it "returns the initfile" do
-      @server.should respond_to(:initfile)
+      expect(@server).to respond_to(:initfile)
       content = @server.initfile || ""
-      content.should be_instance_of(String)
+      expect(content).to be_instance_of(String)
     end
 
     it "list scripts" do
-      @server.should respond_to(:scripts)
+      expect(@server).to respond_to(:scripts)
     end
 
     it "create scripts" do
-      @server.should respond_to(:save_script)
+      expect(@server).to respond_to(:save_script)
       @server.save_script 'subfolder/script', ';; COMMENT'
-      @server.scripts.should include 'subfolder/script'
+      expect(@server.scripts).to include 'subfolder/script'
     end
 
     it "get scripts" do
-      @server.should respond_to(:get_script)
-      @server.get_script('subfolder/script').should == ';; COMMENT'
+      expect(@server).to respond_to(:get_script)
+      expect(@server.get_script('subfolder/script')).to eq(';; COMMENT')
     end
 
     it "remove scripts" do
-      @server.should respond_to(:remove_script)
+      expect(@server).to respond_to(:remove_script)
       @server.remove_script('subfolder/script')
-      @server.scripts.should_not include 'subfolder/script'
+      expect(@server.scripts).not_to include 'subfolder/script'
     end
   end
 end

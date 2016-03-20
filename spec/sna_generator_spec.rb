@@ -9,11 +9,11 @@ describe RDF::AllegroGraph::SnaGenerator do
       :undirected => EX.knows3
     }
     generator = RDF::AllegroGraph::SnaGenerator.new(@repo, options)
-    generator.to_params.should == {
+    expect(generator.to_params).to eq({
       :objectOf => @repo.serialize(FOAF.knows),
       :subjectOf => [@repo.serialize(EX.knows1),
                      @repo.serialize(EX.knows2)],
       :undirected => @repo.serialize(EX.knows3)
-    }
+    })
   end
 end
