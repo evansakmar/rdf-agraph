@@ -12,8 +12,8 @@ shared_examples_for RDF::AllegroGraph::AbstractRepository do
   include RDF_Repository
 
   describe "#supports?" do
-    it "returns true if passed :context" do
-      expect(@repository.supports?(:context)).to eq(true)
+    it "returns true if passed :graph_name" do
+      expect(@repository.supports?(:graph_name)).to eq(true)
     end
 
     it "returns false if passed an unsupported feature" do

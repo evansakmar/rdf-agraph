@@ -13,7 +13,7 @@ module RDF::AllegroGraph
       it 'should parse a root-catalog repository' do
         hash = Parser::parse_uri("#{REPOSITORY_OPTIONS[:url]}/repositories/repo_name")
         expect(hash) .to have_key(:server)
-        expect(hash) .to have_key(:catalog)
+        expect(hash) .not_to have_key(:catalog)
         expect(hash[:id]).to eq('repo_name')
       end
 
