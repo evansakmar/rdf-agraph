@@ -2,6 +2,8 @@
 require 'rubygems'
 require 'bundler'
 require 'dotenv'
+require 'rdf/vocab'
+
 Bundler.require(:default, :development)
 
 # Add our library directory to our require path.
@@ -41,7 +43,7 @@ rescue
 end
 
 # RDF vocabularies.
-FOAF = RDF::FOAF
+FOAF = RDF::Vocab::FOAF
 EX = RDF::Vocabulary.new("http://example.com/")
 
 # Load our shared examples.

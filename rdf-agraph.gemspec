@@ -25,6 +25,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'rdf'
   gem.add_runtime_dependency 'agraph'
   gem.add_runtime_dependency 'json'
+  gem.add_runtime_dependency 'rdf-vocab'
 
   gem.add_development_dependency 'rspec-its'
   gem.add_development_dependency 'rdf-spec'

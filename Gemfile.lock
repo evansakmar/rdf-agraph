@@ -5,6 +5,7 @@ PATH
       agraph
       json
       rdf
+      rdf-vocab
 
 GEM
   remote: https://rubygems.org/
@@ -27,6 +28,8 @@ GEM
       rspec (~> 3.0)
       rspec-its (~> 1.0)
       webmock (~> 1.17)
+    rdf-vocab (0.8.7.1)
+      rdf (~> 1.1, >= 1.1.10)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
