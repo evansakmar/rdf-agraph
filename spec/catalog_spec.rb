@@ -34,7 +34,6 @@ describe RDF::AllegroGraph::Catalog do
 
   it "indicates whether a repository exists" do
     expect(@catalog).to respond_to(:has_repository?)
-    puts @catalog.has_repository?(CATALOG_REPOSITORY_OPTIONS[:id])
     expect(@catalog.has_repository?(CATALOG_REPOSITORY_OPTIONS[:id])).to be true
     expect(@catalog.has_repository?(:foobar)).to be false
   end
