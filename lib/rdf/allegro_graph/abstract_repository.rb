@@ -27,7 +27,7 @@ module RDF::AllegroGraph
     attr_reader :query_options, :insert_options
 
     AUTH_QUERY_OPTIONS = [ :limit, :infer, :offset ]
-    AUTH_INSERT_OPTIONS = [ :context, :continueOnError, :commit ]
+    AUTH_INSERT_OPTIONS = [ :graph_name, :continueOnError, :commit ]
 
     #--------------------------------------------------------------------
     # @group RDF::Repository methods
@@ -54,7 +54,7 @@ module RDF::AllegroGraph
     # @return [Boolean]
     def supports?(feature)
       case feature.to_sym
-      when :context then true
+      when :graph_name then true
       else super
       end
     end
@@ -70,7 +70,7 @@ module RDF::AllegroGraph
     end
 
     # Set the global insert options that will be used at each POST request.
-    # Current supported options are :context, :continueOnError, :commit.
+    # Current supported options are :graph_name, :continueOnError, :commit.
     #
     # @param [Hash] options the options to set
     #
@@ -172,7 +172,7 @@ module RDF::AllegroGraph
       if block_given?
         seen = {}
         dict = statement_to_dict(pattern)
-        dict.delete(:context) if dict[:context] == 'null'
+        dict.delete(:graph_name) if dict[:graph_name] == 'null'
         @resource.statements.find(dict).each do |statement|
           unless seen.has_key?(statement)
             seen[statement] = true
@@ -180,7 +180,7 @@ module RDF::AllegroGraph
             if c.nil?
               yield RDF::Statement.new(s,p,o)
             else
-              yield RDF::Statement.new(s,p,o, :context => c)
+              yield RDF::Statement.new(s,p,o, :graph_name => c)
             end
           end
         end
@@ -397,7 +397,7 @@ module RDF::AllegroGraph
     # @option options [String] :subject Match a specific subject
     # @option options [String] :predicate Match a specific predicate
     # @option options [String] :object Match a specific object
-    # @option options [String] :context Match a specific graph name.
+    # @option options [String] :graph_name Match a specific graph name.
     # @return [void]
     def clear(options = {})
       @resource_writable.statements.delete(prepare_filter_insert_options(options))
@@ -476,7 +476,7 @@ module RDF::AllegroGraph
     def statements_to_json(statements)
       statements.map do |s|
         tuple = [s.subject, s.predicate, s.object]
-        tuple << s.context if s.context
+        tuple << s.graph_name if s.graph_name
         tuple.map {|v| serialize(v) }
       end
     end
@@ -488,10 +488,10 @@ module RDF::AllegroGraph
         :subject => serialize(statement.subject),
         :predicate => serialize(statement.predicate),
         :object => serialize(statement.object),
-        # We have to pass the null context explicitly if we only want
+        # We have to pass the null graph name explicitly if we only want
         # to operate a single statement.  Otherwise, we will operate
-        # on all matching s,p,o triples regardless of context.
-        :context => serialize(statement.context) || 'null'
+        # on all matching s,p,o triples regardless of graph_name.
+        :graph_name => serialize(statement.graph_name) || 'null'
       }.merge!(@query_options)
     end
 
@@ -512,7 +512,7 @@ module RDF::AllegroGraph
         variables.concat(p.variables.values)
         triple = [p.subject, p.predicate, p.object]
         str = triple.map {|v| serialize(v) }.join(" ")
-        # TODO: Wrap in graph block for context!
+        # TODO: Wrap in graph block for graph name!
         if p.optional?
           str = "OPTIONAL { #{str} }"
         end
@@ -617,17 +617,17 @@ module RDF::AllegroGraph
 
     private
 
-    def prepare_context(context)
-      if context.to_s != 'null'
-        "\"#{context}\""
+    def prepare_graph_name(graph_name)
+      if graph_name.to_s != 'null'
+        "\"#{graph_name}\""
       else
-        context
+        graph_name
       end
     end
 
     def prepare_filter_insert_options(options)
       options = options.dup
-      options[:context] = prepare_context(options[:context]) if options[:context]
+      options[:graph_name] = prepare_graph_name(options[:graph_name]) if options[:graph_name]
       options
     end
   end

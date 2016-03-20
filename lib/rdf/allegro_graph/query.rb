@@ -120,7 +120,7 @@ module RDF::AllegroGraph
       when FunctorExpression then pattern_or_functor
       else
       p = pattern_or_functor
-        if p.optional? || p.context
+        if p.optional? || p.graph_name
           raise ArgumentError.new("Can't translate #{p} to Prolog functor")
         end
         FunctorExpression.new('q-', p.subject, p.predicate, p.object)
